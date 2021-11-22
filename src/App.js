@@ -17,7 +17,8 @@ class App extends React.Component {
     this.state = {
       username: '',
       saveButtonEnabled: true,
-      // loading: true,
+      loading: false,
+      redirect: false,
     };
 
     this.onInputChange = this.onInputChange.bind(this);
@@ -37,10 +38,16 @@ class App extends React.Component {
   async onHandleClick() {
     const {
       username,
-      // loading,
     } = this.state;
-    // console.log('oi');
+
+    this.setState({
+      loading: true,
+    });
     await createUser({ name: username });
+    this.setState({
+      loading: false,
+      redirect: true,
+    });
   }
 
   enableSaveButton() {
@@ -64,6 +71,8 @@ class App extends React.Component {
     const {
       username,
       saveButtonEnabled,
+      loading,
+      redirect,
     } = this.state;
 
     return (
@@ -78,6 +87,8 @@ class App extends React.Component {
               username={ username }
               saveButtonEnabled={ saveButtonEnabled }
               onHandleClick={ this.onHandleClick }
+              loading={ loading }
+              redirect={ redirect }
             />) }
           />
           <Route path="/search" component={ Search } />
