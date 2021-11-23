@@ -33,22 +33,25 @@ export default class Album extends Component {
     } = this.state;
 
     return (
-      albumResult.length > 0 && (
-        <div data-testid="page-album">
-          <Header />
-          <h1 data-testid="artist-name">{albumResult[0].artistName}</h1>
-          <h2 data-testid="album-name">{albumResult[0].collectionName}</h2>
-          <div>
-            {albumResult.filter((albums) => (albums.trackName && albums.previewUrl))
-              .map((music) => (
-                <MusicCard
-                  key={ music.trackId }
-                  music={ music }
-                />
-              ))}
+      <div>
+        <Header />
+        {albumResult.length > 0 && (
+          <div data-testid="page-album">
+            <h1 data-testid="artist-name">{albumResult[0].artistName}</h1>
+            <h2 data-testid="album-name">{albumResult[0].collectionName}</h2>
+            <div>
+              {albumResult.filter((albums) => (albums.trackName && albums.previewUrl))
+                .map((music) => (
+                  <MusicCard
+                    key={ music.trackId }
+                    music={ music }
+                  />
+                ))}
+            </div>
           </div>
-        </div>
-      ));
+        )}
+      </div>
+    );
   }
 }
 

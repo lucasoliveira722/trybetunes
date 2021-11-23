@@ -57,6 +57,7 @@ export default class MusicCard extends Component {
               type="checkbox"
               data-testid={ `checkbox-music-${trackId}` }
               checked={ selectedFavorite }
+              id="favorite"
               onChange={ () => this.toggleFavorite(music) }
             />
           </label>
