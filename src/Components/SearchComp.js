@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
+import ArtistCard from './ArtistCard';
+import Loading from './Loading';
 
 export default class SearchComp extends Component {
   constructor() {
@@ -6,12 +9,16 @@ export default class SearchComp extends Component {
 
     this.state = {
       artistSearch: '',
+      artist: '',
       validateSearch: true,
+      loadingArtist: false,
+      albumsList: [],
     };
 
     this.onInputChange = this.onInputChange.bind(this);
     this.searchClick = this.searchClick.bind(this);
     this.validateCharacters = this.validateCharacters.bind(this);
+    this.validateSize = this.validateSize.bind(this);
   }
 
   onInputChange({ target }) {
@@ -20,11 +27,33 @@ export default class SearchComp extends Component {
 
     this.setState({
       [name]: value,
+      artist: value,
     }, this.validateCharacters);
   }
 
-  searchClick() {
-    console.log('OK');
+  validateSize() {
+    const { albumsList, artist } = this.state;
+    if (albumsList.length === 0) return <p>Nenhum álbum foi encontrado</p>;
+    if (albumsList.length > 0) return <p>{`Resultado de álbuns de: ${artist}`}</p>;
+  }
+
+  // Requisito 6
+  async searchClick() {
+    const {
+      artistSearch,
+    } = this.state;
+
+    this.setState({
+      loadingArtist: true,
+    });
+
+    const albums = await searchAlbumsAPI(artistSearch);
+
+    this.setState({
+      loadingArtist: false,
+      albumsList: albums,
+      artistSearch: '',
+    });
   }
 
   validateCharacters() {
@@ -35,7 +64,6 @@ export default class SearchComp extends Component {
     } = this.state;
 
     if (artistSearch.length >= minChar) {
-      console.log('UEPA');
       this.setState({
         validateSearch: false,
       });
@@ -47,30 +75,47 @@ export default class SearchComp extends Component {
   }
 
   render() {
-    const { validateSearch, artistSearch } = this.state;
+    const {
+      validateSearch,
+      artistSearch,
+      albumsList,
+      loadingArtist,
+    } = this.state;
     return (
-      <div>
-        <form>
-          <label htmlFor="artistSearch">
-            Digite a banda ou artista a ser pesquisada:
-            <input
-              data-testid="search-artist-input"
-              type="text"
-              name="artistSearch"
-              value={ artistSearch }
-              onChange={ this.onInputChange }
+      loadingArtist ? <Loading /> : (
+        <div>
+          <form>
+            <label htmlFor="artistSearch">
+              Digite a banda ou artista a ser pesquisada:
+              <input
+                data-testid="search-artist-input"
+                type="text"
+                name="artistSearch"
+                value={ artistSearch }
+                onChange={ this.onInputChange }
+              />
+            </label>
+            <button
+              data-testid="search-artist-button"
+              type="button"
+              disabled={ validateSearch }
+              onClick={ this.searchClick }
+            >
+              Procurar
+            </button>
+          </form>
+
+          {this.validateSize()}
+          {albumsList.map((album) => (
+            <ArtistCard
+              key={ album.collectionId }
+              artistName={ album.artistName }
+              collectionName={ album.collectionName }
+              collectionId={ album.collectionId }
+              artworkUrl100={ album.artworkUrl100 }
             />
-          </label>
-          <button
-            data-testid="search-artist-button"
-            type="button"
-            disabled={ validateSearch }
-            onClick={ this.searchClick }
-          >
-            Procurar
-          </button>
-        </form>
-      </div>
-    );
+          ))}
+        </div>
+      ));
   }
 }
