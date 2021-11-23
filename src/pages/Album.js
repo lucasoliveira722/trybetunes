@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Header from '../Components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../Components/MusicCard';
+import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 export default class Album extends Component {
   constructor() {
@@ -17,6 +18,8 @@ export default class Album extends Component {
 
   componentDidMount() {
     this.fetchResult();
+    getFavoriteSongs();
+    console.log(localStorage.favorite_songs);
   }
 
   async fetchResult() {

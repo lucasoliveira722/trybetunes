@@ -59,6 +59,7 @@ export default class MusicCard extends Component {
               checked={ selectedFavorite }
               id="favorite"
               onChange={ () => this.toggleFavorite(music) }
+              // defaultChecked={ localStorage.favoriteSongs }
             />
           </label>
         </div>
